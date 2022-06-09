@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:sneakers/src/core/constants/app_text_styles.dart';
 import 'package:sneakers/src/core/data/data.dart';
 
+import '../../movie/details_page.dart';
+
 class MoviesView extends StatefulWidget {
   const MoviesView({Key? key}) : super(key: key);
 
@@ -46,7 +48,7 @@ class _MoviesViewState extends State<MoviesView>
                 controller: _movieCardPageController,
                 onPageChanged: (page) {
                   _movieDetailPageController.animateToPage(page,
-                      duration: const Duration(milliseconds: 550),
+                      duration: const Duration(milliseconds: 850),
                       curve: Curves.decelerate);
                 },
                 clipBehavior: Clip.none,
@@ -63,7 +65,20 @@ class _MoviesViewState extends State<MoviesView>
                   return Transform.scale(
                     scale: isScrolling && isFirstPage ? 1 - progress : scale,
                     child: GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        _showMovieDetails.value = !_showMovieDetails.value;
+                        const transitionDuration = Duration(milliseconds: 500);
+                        Navigator.of(context).push(
+                            PageRouteBuilder(pageBuilder: (_, animation, __) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: MoviePage(movie: movie),
+                          );
+                        }));
+                        Future.delayed(transitionDuration, (() {
+                          _showMovieDetails.value = !_showMovieDetails.value;
+                        }));
+                      },
                       child: Hero(
                         tag: movie.image,
                         child: AnimatedContainer(
@@ -126,7 +141,6 @@ class _MoviesViewState extends State<MoviesView>
                               ),
                             ),
                           ),
-                          
                         ],
                       ),
                     ),
